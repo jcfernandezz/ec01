@@ -1,0 +1,8 @@
+MEXICO
+Esta aplicación agrega una ventana a las facturas pm y pop para marcarlas como deducibles y para agregar el folio fiscal.
+
+Ejecutar el script 01_dcemTrgEliminaFoliosDepm10000.trigger.sql
+
+Instalar el chunk
+
+Ejecutar el script 02_backup y restauración de aca_ietu00400.sql

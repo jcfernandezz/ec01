@@ -1,0 +1,77 @@
+<Component Name="nsaCOA_RUC" ProductId="5064" Object="VBAForm" >
+VBAForm	"nsaCOA_RUC"
+{
+	Windows
+	{
+		Window	"nsacoa_Asig_RUC"		
+		{
+			Code	"Private Sub Guardar_BeforeUserChanged(KeepFocus As Boolean, CancelLogic As Boolean)
+
+If Tipodedocumento = \"validar\" Then
+'If Tipodedocumento = \"3\" Then
+    If (Mid(RUCDV, 3, 1) = \"9\") Then
+        If Not ValidaRucJuridico(Left(RUCDV, 10), 22) Then
+            CancelLogic = True
+            MsgBox (\"El RUC es Incorrecto. Presione el botón Borrar y vuelva a ingresar el RUC. (9)\")
+
+        End If
+    End If
+    If (Mid(RUCDV, 3, 1) = \"6\") Then
+        If Not ValidaRucPublico(Left(RUCDV, 9), 22) Then
+            CancelLogic = True
+            MsgBox (\"El RUC es Incorrecto. Presione el botón Borrar y vuelva a ingresar el RUC. (6)\")
+        End If
+    End If
+    If (CInt(Mid(RUCDV, 3, 1)) <= 5) Then
+        If Not ValidaRucPersonaNat(Left(RUCDV, 10), 22) Then
+            CancelLogic = True
+            MsgBox (\"El RUC es Incorrecto. Presione el botón Borrar y vuelva a ingresar el RUC. (0,1,2,3,4,5)\")
+        End If
+    End If
+    
+    If (Mid(RUCDV, 3, 1) = \"7\" Or Mid(RUCDV, 3, 1) = \"8\") Then
+            CancelLogic = True
+            MsgBox (\"El RUC es Incorrecto. Presione el botón Borrar y vuelva a ingresar el RUC. (7, 8)\")
+    End If
+End If
+
+
+
+End Sub"
+			EventMode	"0"
+			Fields
+			{
+				WindowField	"Document Type"				
+				{
+					ArrayIndex	"0"
+					DisplayName	"Tipodedocumento"
+					Local	"false"
+					ProgrammerName	"Document Type"
+				}
+				WindowField	"Save Button"				
+				{
+					ArrayIndex	"0"
+					DisplayName	"Guardar"
+					Local	"false"
+					ProgrammerName	"Save Button"
+				}
+				WindowField	"nsa_Cod_Ver"				
+				{
+					ArrayIndex	"0"
+					DisplayName	"nsaCodVer"
+					Local	"false"
+					ProgrammerName	"nsa_Cod_Ver"
+				}
+				WindowField	"nsa_RUC_ID"				
+				{
+					ArrayIndex	"0"
+					DisplayName	"RUCDV"
+					Local	"false"
+					ProgrammerName	"nsa_RUC_ID"
+				}
+			}
+			Title	"ConfiguracióndeRUC"
+		}
+	}
+}
+</Component>

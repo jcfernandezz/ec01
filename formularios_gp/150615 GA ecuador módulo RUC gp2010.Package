@@ -1,0 +1,204 @@
+<Component Name="RUC" ProductId="5064" Object="VBAModule" >
+VBAModule	"RUC"
+{
+	Code	"
+Function ValidaRucJuridico(cedula As String, numProvincias As Integer) As Boolean
+'Propósito. Valida el ruc jurídico. (tipo 9)
+'Requisito. Mandar al parámetro cedula los primeros 10 dígitos del ruc
+'8/1/15 jcf Creación
+'
+    Const numDigitos = 10
+    Dim arrCoeficientes(0 To numDigitos - 1) As Integer
+    arrCoeficientes(0) = 4
+    arrCoeficientes(1) = 3
+    arrCoeficientes(2) = 2
+    arrCoeficientes(3) = 7
+    arrCoeficientes(4) = 6
+    arrCoeficientes(5) = 5
+    arrCoeficientes(6) = 4
+    arrCoeficientes(7) = 3
+    arrCoeficientes(8) = 2
+    arrCoeficientes(9) = 0
+    Dim base As Integer
+    base = 11
+    
+    Dim isValid As Boolean
+    isValid = False
+    
+    Dim provincia As Integer
+    provincia = CInt(Left(cedula, 2))
+        
+    If (provincia < 1 Or provincia > numProvincias) Then
+        isValid = False
+    End If
+    
+    Dim arrCedula(0 To numDigitos - 1) As Integer
+    Dim lenCedula As Integer
+    lenCedula = numDigitos
+    Dim suma As Integer
+    suma = 0
+    
+    For i = 0 To lenCedula - 1
+        arrCedula(i) = CInt(Mid(cedula, i + 1, 1))
+    Next
+    
+    For i = 0 To lenCedula - 2  'Excluye dígito verificador
+        arrCedula(i) = arrCedula(i) * arrCoeficientes(i)
+        suma = suma + arrCedula(i)
+    Next
+ 
+    Dim residuo As Integer
+    residuo = suma Mod base
+    Dim verificador As Integer
+    verificador = base - residuo
+ 
+    If residuo = 0 Then
+        verificador = 0
+    End If
+    
+    If verificador = arrCedula(numDigitos - 1) Then
+        isValid = True
+    Else
+        isValid = False
+    End If
+    
+    ValidaRucJuridico = isValid
+    
+End Function
+
+Function ValidaRucPublico(cedula As String, numProvincias As Integer) As Boolean
+'Propósito. Valida el ruc de persona Pública. (tipo 6)
+'Requisito. Mandar al parámetro cedula los primeros 9 dígitos del ruc
+'8/1/15 jcf Creación
+'12/6/15 jcf Excluye dígito verificador en la sumatoria
+'
+    Const numDigitos = 9
+    Dim arrCoeficientes(0 To numDigitos - 1) As Integer
+    arrCoeficientes(0) = 3
+    arrCoeficientes(1) = 2
+    arrCoeficientes(2) = 7
+    arrCoeficientes(3) = 6
+    arrCoeficientes(4) = 5
+    arrCoeficientes(5) = 4
+    arrCoeficientes(6) = 3
+    arrCoeficientes(7) = 2
+    arrCoeficientes(8) = 0
+    Dim base As Integer
+    base = 11
+    
+    Dim isValid As Boolean
+    isValid = False
+    
+    Dim provincia As Integer
+    provincia = CInt(Left(cedula, 2))
+        
+    If (provincia < 1 Or provincia > numProvincias) Then
+        isValid = False
+    End If
+    
+    Dim arrCedula(0 To numDigitos - 1) As Integer
+    Dim lenCedula As Integer
+    lenCedula = numDigitos
+    Dim suma As Integer
+    suma = 0
+    
+    For i = 0 To lenCedula - 1
+        arrCedula(i) = CInt(Mid(cedula, i + 1, 1))
+    Next
+    
+    For i = 0 To lenCedula - 2
+        arrCedula(i) = arrCedula(i) * arrCoeficientes(i)
+        suma = suma + arrCedula(i)
+    Next
+ 
+    Dim residuo As Integer
+    residuo = suma Mod base
+    Dim verificador As Integer
+    verificador = base - residuo
+ 
+    If residuo = 0 Then
+        verificador = 0
+    End If
+    
+    If verificador = arrCedula(numDigitos - 1) Then
+        isValid = True
+    Else
+        isValid = False
+    End If
+    
+    ValidaRucPublico = isValid
+    
+End Function
+
+Function ValidaRucPersonaNat(cedula As String, numProvincias As Integer) As Boolean
+'Propósito. Valida el ruc de persona Pública. (tipo 6)
+'Requisito. Mandar al parámetro cedula los primeros 9 dígitos del ruc
+'12/6/15 jcf Creación
+'
+    Const numDigitos = 10
+    Dim arrCoeficientes(0 To numDigitos - 1) As Integer
+    arrCoeficientes(0) = 2
+    arrCoeficientes(1) = 1
+    arrCoeficientes(2) = 2
+    arrCoeficientes(3) = 1
+    arrCoeficientes(4) = 2
+    arrCoeficientes(5) = 1
+    arrCoeficientes(6) = 2
+    arrCoeficientes(7) = 1
+    arrCoeficientes(8) = 2
+    arrCoeficientes(9) = 0
+    Dim base As Integer
+    base = 10
+    
+    Dim isValid As Boolean
+    isValid = False
+    
+    Dim provincia As Integer
+    provincia = CInt(Left(cedula, 2))
+        
+    If (provincia < 1 Or provincia > numProvincias) Then
+        isValid = False
+    End If
+    
+    Dim arrCedula(0 To numDigitos - 1) As Integer
+    Dim lenCedula As Integer
+    lenCedula = numDigitos
+    Dim suma As Integer
+    suma = 0
+    
+    For i = 0 To lenCedula - 1
+        arrCedula(i) = CInt(Mid(cedula, i + 1, 1))
+    Next
+    
+    For i = 0 To lenCedula - 2 'Para no sobreescribir excluye el dígito verificador
+        arrCedula(i) = arrCedula(i) * arrCoeficientes(i)
+        If arrCedula(i) > base Then
+            suma = suma + Int(arrCedula(i) / base) + (arrCedula(i) Mod base)
+        Else
+            suma = suma + arrCedula(i)
+        End If
+
+    Next
+ 
+    Dim residuo As Integer
+    residuo = suma Mod base
+    Dim verificador As Integer
+    verificador = base - residuo
+ 
+    If residuo = 0 Then
+        verificador = 0
+    End If
+    
+    If verificador = arrCedula(numDigitos - 1) Then
+        isValid = True
+    Else
+        isValid = False
+    End If
+    
+    ValidaRucPersonaNat = isValid
+    
+End Function
+"
+	Name	"RUC"
+}
+</Component>
