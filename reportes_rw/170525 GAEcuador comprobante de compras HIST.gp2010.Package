@@ -1,0 +1,1410 @@
+<Component Name="Comprobante de Compras HIST" ProductId="9890" Object="Report" >
+Report	"Comprobante de Compras HIST"
+{
+	CalculatedFields
+	{
+		CalculatedField	"Description"		
+		{
+			EvaluateAfter	""
+			Expression	"'RW_GetDescription'( 2 'PM_Paid_Transaction_HIST'.'TRX Source''PM_Paid_Transaction_HIST'.'Voucher Number''PM_Paid_Transaction_HIST'.'Document Type' )  "
+			ResultType	"String"
+		}
+		CalculatedField	"Direccion"		
+		{
+			EvaluateAfter	""
+			Expression	"'STRIP'( 'PM_Vendor_MSTR'.'Address 1' )   #  \" \"  #  'STRIP'( 'PM_Vendor_MSTR'.'Address 2' )   #  \" \"  #  'STRIP'( 'PM_Vendor_MSTR'.'Address 3' )  "
+			ResultType	"String"
+		}
+		CalculatedField	"Restriction"		
+		{
+			EvaluateAfter	""
+			Expression	"'eBizS_PM_Inquiry_TEMP_CER_RET'.'Document Date'"
+			ResultType	"Date"
+		}
+		CalculatedField	"TaxAmount"		
+		{
+			EvaluateAfter	""
+			Expression	"'RW_eBizSGetTaxAmount'( 2 'PM_Paid_Transaction_HIST'.'TRX Source''PM_Paid_Transaction_HIST'.'Voucher Number' )  "
+			ResultType	"Currency"
+		}
+		CalculatedField	"Total"		
+		{
+			EvaluateAfter	""
+			Expression	"'TotalAmount'  +  'PM_Paid_Transaction_HIST'.'Tax Amount'"
+			ResultType	"Currency"
+		}
+		CalculatedField	"TotalAmount"		
+		{
+			EvaluateAfter	""
+			Expression	"'PM_Paid_Transaction_HIST'.'Purchases Amount' -  'PM_Paid_Transaction_HIST'.'Trade Discount Amount' +  'PM_Paid_Transaction_HIST'.'Freight Amount' +  'PM_Paid_Transaction_HIST'.'Misc Charges Amount'"
+			ResultType	"Currency"
+		}
+		CalculatedField	"Valor IMP"		
+		{
+			EvaluateAfter	""
+			Expression	"if 'PM_Tax_HIST'.'Tax Amount' <  0.00000 then 'PM_Tax_HIST'.'Tax Amount'else 0.00000 "
+			ResultType	"Currency"
+		}
+		CalculatedField	"cal_EjercicioFiscal"		
+		{
+			EvaluateAfter	""
+			Expression	"'DAT_YYYY'( 'PM_Paid_Transaction_HIST'.'Posting Date' )  "
+			ResultType	"Integer"
+		}
+		CalculatedField	"cal_SerieSecuencial"		
+		{
+			EvaluateAfter	""
+			Expression	"\"\" "
+			ResultType	"String"
+		}
+		CalculatedField	"cal_TipoDoc"		
+		{
+			EvaluateAfter	""
+			Expression	"\"\" "
+			ResultType	"String"
+		}
+		CalculatedField	"cal_base"		
+		{
+			EvaluateAfter	""
+			Expression	"if 'PM_Tax_HIST'.'Tax Detail ID' =  \"104-725-1\" then 'RW_Abs'( 'Valor IMP'  )  else 'PM_Tax_HIST'.'Tax Detail Total Purchases'"
+			ResultType	"Currency"
+		}
+		CalculatedField	"cal_pctj"		
+		{
+			EvaluateAfter	""
+			Expression	" (  'Valor IMP'  /  'cal_base'  )   *  100.00000 "
+			ResultType	"Currency"
+		}
+		CalculatedField	"cal_pctj_str"		
+		{
+			EvaluateAfter	""
+			Expression	"'CUR_STR'( 'cal_pctj'  )  "
+			ResultType	"String"
+		}
+		CalculatedField	"cal_percent_ret"		
+		{
+			EvaluateAfter	""
+			Expression	"if 'TX_Detail_MSTR'.'Tax Detail ID' =  \"104-725-1\" then 100 else 'TX_Detail_MSTR'.'Tax Detail Percent' *   (   -  1  )  "
+			ResultType	"Currency"
+		}
+	}
+	DisplayName	""
+	FirstPageHeader	"true"
+	Key	"2"
+	LastPageFooter	"true"
+	LeftMargin	"0"
+	MainTable	"eBizS_PM_Inquiry_TEMP_CER_RET"
+	MaxRecords	"0"
+	MultiLoginReport	"false"
+	Orientation	"PrinterSetting"
+	ReportTables
+	{
+		ReportTable	"00000"		
+		{
+			LinkedTo	""
+			Table	"eBizS_PM_Inquiry_TEMP_CER_RET"
+		}
+		ReportTable	"00001"		
+		{
+			LinkedTo	"eBizS_PM_Inquiry_TEMP_CER_RET"
+			Table	"eBizS_CER_RET_HIST"
+		}
+		ReportTable	"00002"		
+		{
+			LinkedTo	"eBizS_PM_Inquiry_TEMP_CER_RET"
+			Table	"PM_Document_Type_SETP"
+		}
+		ReportTable	"00003"		
+		{
+			LinkedTo	"eBizS_PM_Inquiry_TEMP_CER_RET"
+			Table	"PM_Vendor_MSTR"
+		}
+		ReportTable	"00004"		
+		{
+			LinkedTo	"eBizS_PM_Inquiry_TEMP_CER_RET"
+			Table	"PM_Paid_Transaction_HIST"
+		}
+		ReportTable	"00005"		
+		{
+			LinkedTo	"PM_Paid_Transaction_HIST"
+			Table	"PM_Tax_HIST"
+		}
+		ReportTable	"00006"		
+		{
+			LinkedTo	"PM_Tax_HIST"
+			Table	"TX_Detail_MSTR"
+		}
+	}
+	Restrictions
+	{
+		Restriction	"Impuesto"		
+		{
+			Expression	"'PM_Paid_Transaction_HIST'.'Voucher Number' =  'PM_Tax_HIST'.'Voucher Number'"
+		}
+		Restriction	"RelacionTablaHist"		
+		{
+			Expression	"'eBizS_PM_Inquiry_TEMP_CER_RET'.'Voucher Number' =  'PM_Paid_Transaction_HIST'.'Voucher Number' AND  'eBizS_PM_Inquiry_TEMP_CER_RET'.'Document Type' =  'PM_Paid_Transaction_HIST'.'Document Type'"
+		}
+		Restriction	"VoucherNumberAndDocType"		
+		{
+			Expression	"'eBizS_PM_Inquiry_TEMP_CER_RET'.'Voucher Number' =  'eBizS_CER_RET_HIST'.'Voucher Number' AND  'eBizS_PM_Inquiry_TEMP_CER_RET'.'Document Type' =  'eBizS_CER_RET_HIST'.'Document Type'"
+		}
+	}
+	Sections
+	{
+		ReportBody	"Body"		
+		{
+			Dividers
+			{
+			}
+			Fields
+			{
+				ReportControl	"111"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Field	"'TX_Detail_MSTR'.'Tax Detail Description'"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"104"
+					PositionTop	"223"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"211"
+					ZOrder	"41"
+				}
+				ReportCalculatedField	"112"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					CalculatedField	"cal_base"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"319"
+					PositionTop	"223"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"101"
+					ZOrder	"42"
+				}
+				ReportLine	"127"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"318"
+					PositionTop	"224"
+					SizeHeight	"24"
+					SizeWidth	"0"
+					ZOrder	"44"
+				}
+				ReportLine	"128"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"421"
+					PositionTop	"223"
+					SizeHeight	"25"
+					SizeWidth	"0"
+					ZOrder	"45"
+				}
+				ReportLine	"131"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"480"
+					PositionTop	"223"
+					SizeHeight	"26"
+					SizeWidth	"0"
+					ZOrder	"46"
+				}
+				ReportLine	"137"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"570"
+					PositionTop	"223"
+					SizeHeight	"25"
+					SizeWidth	"0"
+					ZOrder	"47"
+				}
+				ReportCalculatedField	"138"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					CalculatedField	"cal_percent_ret"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	"PORCENTAJE"
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"428"
+					PositionTop	"223"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"48"
+					ZOrder	"48"
+				}
+				ReportControl	"77"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Field	"'PM_Tax_HIST'.'Tax Detail ID'"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"17"
+					PositionTop	"223"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"81"
+					ZOrder	"40"
+				}
+				ReportCalculatedField	"82"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					CalculatedField	"Valor IMP"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"483"
+					PositionTop	"223"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"84"
+					ZOrder	"43"
+				}
+			}
+			PositionBottom	"246"
+			SectionType	"Body"
+			SuppressWhenFieldIsEmpty	"Valor IMP"
+		}
+		AdditionalReportFooter	"Footer-Consecutivo"		
+		{
+			BreakField	"'eBizS_CER_RET_HIST'.'eBizS_NextDocumentNumber'"
+			Fields
+			{
+				ReportText	"116"				
+				{
+					Alignment	"center"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"true"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"73"
+					PositionTop	"346"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"123"
+					Text	"G. ADVENTURES S.A."
+					ZOrder	"57"
+				}
+				ReportText	"117"				
+				{
+					Alignment	"center"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"true"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"384"
+					PositionTop	"326"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"106"
+					Text	"Firma Proveedor"
+					ZOrder	"58"
+				}
+				ReportLine	"118"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"315"
+					PositionTop	"326"
+					SizeHeight	"0"
+					SizeWidth	"231"
+					ZOrder	"59"
+				}
+				ReportLine	"125"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"0"
+					PositionTop	"270"
+					SizeHeight	"0"
+					SizeWidth	"570"
+					ZOrder	"60"
+				}
+				ReportLine	"132"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"570"
+					PositionTop	"247"
+					SizeHeight	"25"
+					SizeWidth	"0"
+					ZOrder	"61"
+				}
+				ReportLine	"134"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"318"
+					PositionTop	"247"
+					SizeHeight	"24"
+					SizeWidth	"0"
+					ZOrder	"62"
+				}
+				ReportText	"43"				
+				{
+					Alignment	"center"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"true"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"82"
+					PositionTop	"326"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"114"
+					Text	"Firma Autorizada "
+					ZOrder	"50"
+				}
+				ReportLine	"45"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"10"
+					PositionTop	"326"
+					SizeHeight	"0"
+					SizeWidth	"252"
+					ZOrder	"51"
+				}
+				ReportText	"83"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"351"
+					PositionTop	"254"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"102"
+					Text	"Total Retenciones:"
+					ZOrder	"52"
+				}
+				ReportCalculatedField	"89"				
+				{
+					Alignment	"right"
+					BackColor	"White"
+					CalculatedField	"Valor IMP"
+					DisplayOptions	"Visible"
+					DisplayType	"Sum"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"456"
+					PositionTop	"254"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"112"
+					ZOrder	"53"
+				}
+				ReportControl	"90"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"LastOccurrence"
+					Field	"'PM_Paid_Transaction_HIST'.'Tax Amount'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"12"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"Black"
+					PositionLeft	"21"
+					PositionTop	"272"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"15"
+					SizeWidth	"133"
+					ZOrder	"54"
+				}
+				ReportCalculatedField	"92"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					CalculatedField	"Total"
+					DisplayOptions	"Invisible"
+					DisplayType	"LastOccurrence"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"10"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"455"
+					PositionTop	"273"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"15"
+					SizeWidth	"98"
+					ZOrder	"55"
+				}
+				ReportLine	"93"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"0"
+					PositionTop	"252"
+					SizeHeight	"0"
+					SizeWidth	"570"
+					ZOrder	"56"
+				}
+				ReportControl	"95"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"LastOccurrence"
+					Field	"'TX_Detail_MSTR'.'Tax Detail Percent'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"10"
+					FontUnderline	"false"
+					Format	"PORCENTAJE"
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"392"
+					PositionTop	"273"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"13"
+					SizeWidth	"56"
+					ZOrder	"49"
+				}
+			}
+			NoBreakAtRecordCount	"false"
+			PageBreak	"true"
+			PositionBottom	"390"
+			RecordsPerBody	"0"
+			ResetReport	"false"
+			SectionType	"AdditionalFooter"
+			SuppressLastRecord	"false"
+			SuppressWhenFieldIsEmpty	""
+		}
+		AdditionalReportHeader	"Header-Consecutivo"		
+		{
+			BreakField	"'eBizS_CER_RET_HIST'.'eBizS_NextDocumentNumber'"
+			Fields
+			{
+				ReportText	"10"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"3"
+					PositionTop	"122"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"69"
+					Text	"Proveedor:"
+					ZOrder	"8"
+				}
+				ReportLine	"100"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"0"
+					PositionTop	"220"
+					SizeHeight	"0"
+					SizeWidth	"570"
+					ZOrder	"23"
+				}
+				ReportSystemVariable	"101"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"67"
+					PositionTop	"77"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"15"
+					SizeWidth	"177"
+					SystemVariable	"globals.'User Defined Company String 1'"
+					ZOrder	"24"
+				}
+				ReportControl	"104"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"Data"
+					Field	"'PM_Paid_Transaction_HIST'.'Voucher Number'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"463"
+					PositionTop	"100"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"112"
+					ZOrder	"25"
+				}
+				ReportControl	"105"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Field	"'PM_Paid_Transaction_HIST'.'Document Date'"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"441"
+					PositionTop	"170"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"84"
+					ZOrder	"26"
+				}
+				ReportText	"107"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"317"
+					PositionTop	"138"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"96"
+					Text	"No.Comprobante:"
+					ZOrder	"6"
+				}
+				ReportText	"108"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"318"
+					PositionTop	"169"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"46"
+					Text	"Fecha:"
+					ZOrder	"5"
+				}
+				ReportCalculatedField	"119"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					CalculatedField	"cal_EjercicioFiscal"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	"NUM_RB_U0"
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"441"
+					PositionTop	"154"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"91"
+					ZOrder	"28"
+				}
+				ReportText	"120"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"318"
+					PositionTop	"154"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"88"
+					Text	"Ejercicio Fiscal:"
+					ZOrder	"29"
+				}
+				ReportControl	"121"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"Data"
+					Field	"'PM_Paid_Transaction_HIST'.'Vendor ID'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"12"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"Black"
+					PositionLeft	"77"
+					PositionTop	"24"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"15"
+					SizeWidth	"112"
+					ZOrder	"30"
+				}
+				ReportCalculatedField	"122"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					CalculatedField	"cal_TipoDoc"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"320"
+					PositionTop	"122"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"121"
+					ZOrder	"31"
+				}
+				ReportCalculatedField	"123"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					CalculatedField	"cal_SerieSecuencial"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"441"
+					PositionTop	"122"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"147"
+					ZOrder	"32"
+				}
+				ReportLine	"124"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"1"
+					PositionTop	"198"
+					SizeHeight	"0"
+					SizeWidth	"570"
+					ZOrder	"33"
+				}
+				ReportLine	"126"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"318"
+					PositionTop	"198"
+					SizeHeight	"25"
+					SizeWidth	"0"
+					ZOrder	"34"
+				}
+				ReportLine	"129"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"421"
+					PositionTop	"199"
+					SizeHeight	"25"
+					SizeWidth	"0"
+					ZOrder	"35"
+				}
+				ReportLine	"130"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"480"
+					PositionTop	"198"
+					SizeHeight	"25"
+					SizeWidth	"0"
+					ZOrder	"36"
+				}
+				ReportLine	"135"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"1"
+					PositionTop	"119"
+					SizeHeight	"104"
+					SizeWidth	"0"
+					ZOrder	"37"
+				}
+				ReportLine	"136"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"570"
+					PositionTop	"120"
+					SizeHeight	"104"
+					SizeWidth	"0"
+					ZOrder	"38"
+				}
+				ReportText	"14"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"3"
+					PositionTop	"151"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"76"
+					Text	"Cédula/RUC:"
+					ZOrder	"9"
+				}
+				ReportLine	"144"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"1"
+					PositionTop	"222"
+					SizeHeight	"26"
+					SizeWidth	"0"
+					ZOrder	"39"
+				}
+				ReportSystemVariable	"16"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"70"
+					PositionTop	"62"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"197"
+					SystemVariable	"globals.'Company Name'"
+					ZOrder	"10"
+				}
+				ReportControl	"18"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Field	"'eBizS_PM_Inquiry_TEMP_CER_RET'.'Vendor ID'"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"73"
+					PositionTop	"151"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"109"
+					ZOrder	"11"
+				}
+				ReportControl	"19"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Field	"'PM_Vendor_MSTR'.'Vendor Name'"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"73"
+					PositionTop	"122"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"26"
+					SizeWidth	"242"
+					ZOrder	"12"
+				}
+				ReportControl	"24"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Field	"'eBizS_CER_RET_HIST'.'eBizS_NextDocumentNumber'"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"441"
+					PositionTop	"138"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"126"
+					ZOrder	"13"
+				}
+				ReportControl	"27"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"Data"
+					Field	"'eBizS_CER_RET_HIST'.'Phone 1'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"74"
+					PositionTop	"91"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"177"
+					ZOrder	"14"
+				}
+				ReportControl	"28"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"Data"
+					Field	"'eBizS_CER_RET_HIST'.'Company Address 1'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"376"
+					PositionTop	"100"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"85"
+					ZOrder	"15"
+				}
+				ReportText	"29"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"3"
+					PositionTop	"167"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"76"
+					Text	"Descripción:"
+					ZOrder	"16"
+				}
+				ReportControl	"4"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"Data"
+					Field	"'eBizS_PM_Inquiry_TEMP_CER_RET'.'Document Date'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"76"
+					PositionTop	"43"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"77"
+					ZOrder	"7"
+				}
+				ReportCalculatedField	"40"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					CalculatedField	"Description"
+					DisplayOptions	"Visible"
+					DisplayType	"Data"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"73"
+					PositionTop	"166"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"26"
+					SizeWidth	"242"
+					ZOrder	"17"
+				}
+				ReportControl	"50"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Invisible"
+					DisplayType	"Data"
+					Field	"'PM_Paid_Transaction_HIST'.'Document Number'"
+					Font	"Helvetica (generic)"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Format	""
+					FormatField	""
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"170"
+					PositionTop	"50"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"119"
+					ZOrder	"18"
+				}
+				ReportLine	"74"				
+				{
+					LineColor	"Black"
+					LineSize	"1"
+					PositionLeft	"2"
+					PositionTop	"120"
+					SizeHeight	"0"
+					SizeWidth	"570"
+					ZOrder	"19"
+				}
+				ReportText	"94"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"482"
+					PositionTop	"200"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"64"
+					Text	"Monto Ret."
+					ZOrder	"27"
+				}
+				ReportText	"97"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"34"
+					PositionTop	"200"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"64"
+					Text	"Concepto"
+					ZOrder	"20"
+				}
+				ReportText	"98"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"334"
+					PositionTop	"200"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"72"
+					Text	"Monto Base"
+					ZOrder	"21"
+				}
+				ReportText	"99"				
+				{
+					Alignment	"left"
+					BackColor	"White"
+					DisplayOptions	"Visible"
+					Font	"Arial"
+					FontBold	"false"
+					FontColor	"Black"
+					FontItalic	"false"
+					FontSize	"11"
+					FontUnderline	"false"
+					Pattern	"(none)"
+					PatternColor	"White"
+					PositionLeft	"436"
+					PositionTop	"200"
+					ReadingOrder	"LeftToRight"
+					SizeHeight	"14"
+					SizeWidth	"33"
+					Text	"(%)"
+					ZOrder	"22"
+				}
+			}
+			NoBreakAtRecordCount	"false"
+			PositionBottom	"222"
+			RecordsPerReportBody	"0"
+			SectionType	"AdditionalHeader"
+			SuppressWhenFieldIsEmpty	"Restriction"
+		}
+		ReportSection	"PageHeader"		
+		{
+			Fields
+			{
+			}
+			PositionBottom	"8"
+			SectionType	"PageHeader"
+		}
+	}
+	Series	"Purchasing"
+	SixLinesPerInch	"false"
+	SkipBlankRecords	"true"
+	SortSegments
+	{
+		Sort	"0000"		
+		{
+			IgnoreCase	"false"
+			Segment	"'eBizS_CER_RET_HIST'.'eBizS_NextDocumentNumber'"
+			SortOrder	"Ascending"
+		}
+	}
+	SuppressCents	"false"
+	Type	"Graphic"
+	UseReportFooterForLastPageFooter	"false"
+}
+</Component>
+<Component Name="Comprobante de Compras HIST" ProductId="9890" Object="VBAReport" >
+VBAReport	"Comprobante de Compras HIST"
+{
+	Code	"Option Explicit
+
+Dim cn As New ADODB.Connection
+Dim rst As New ADODB.Recordset
+Dim cmd As New ADODB.Command
+
+Private Sub Report_BeforeAH(ByVal Level As Integer, SuppressBand As Boolean)
+On Error GoTo MSJERR
+
+'Create a command to select all customers
+cmd.ActiveConnection = cn
+cmd.CommandType = 1     'adCmdText
+cmd.CommandText = \"select td.nsacoa_description, trx.nsa_serie, trx.nsacoa_secuencial from NSACOA_GL00021 trx inner join nsacoa_gl00004 td on trx.nsa_tipo_comprob = td.nsa_tipo_comprob where trx.VENDORID = '\" + RTrim(VendorID.Value) + \"' and trx.DOCNUMBR = '\" + RTrim(VoucherNumber.Value) + \"'\"
+Set rst = cmd.Execute
+
+If Not (rst.EOF) Then  'And rst.BOF
+'  MsgBox RTrim(rst!nsacoa_description)
+  calTipoDoc = UCase(RTrim(rst!nsacoa_description))
+  calSerieSecuencial = Left(RTrim(rst!nsa_serie), 3) + \"-\" + Right(RTrim(rst!nsa_serie), 3) + \"-\" + RTrim(rst!nsacoa_secuencial)
+
+End If
+rst.Close
+    
+'Do While Not (rst.EOF And rst.BOF)
+'  MsgBox rst.Fields(0).Value
+'  calTipoDoc = rst.Fields(0).Value
+'Loop
+
+MSJERR:
+'MsgBox \"BeforeAH: err\"
+End Sub
+
+Private Sub Report_End()
+On Error GoTo MSJERR
+
+'close the connection
+    If rst.State = adStateOpen Then rst.Close
+    If cn.State = adStateOpen Then cn.Close
+    Set cn = Nothing
+    Set rst = Nothing
+    Set cmd = Nothing
+    
+'MsgBox \"End: ok\"
+
+MSJERR:
+
+End Sub
+
+Private Sub Report_Start()
+On Error GoTo MSJERR
+'Retrieve an ADO connection for the current user
+Set cn = UserInfoGet.CreateADOConnection()
+
+'Set the connection properties
+cn.CursorLocation = 3   'adUseClient
+
+'Set the current database, using the IntercompanyID property
+cn.DefaultDatabase = UserInfoGet.IntercompanyID
+
+'MsgBox \"Start: ok\"
+
+MSJERR:
+End Sub"
+	EventMode	"1"
+	Fields
+	{
+		ReportField	"VendorID"		
+		{
+			AccumulatorType	"0"
+			ArrayIndex	"0"
+			BandLevel	"0"
+			BandType	"0"
+			FieldName	"Vendor ID"
+			TableName	"PM_Paid_Transaction_HIST"
+		}
+		ReportField	"VoucherNumber"		
+		{
+			AccumulatorType	"0"
+			ArrayIndex	"0"
+			BandLevel	"0"
+			BandType	"0"
+			FieldName	"Voucher Number"
+			TableName	"PM_Paid_Transaction_HIST"
+		}
+		ReportField	"calSerieSecuencial"		
+		{
+			AccumulatorType	"0"
+			ArrayIndex	"0"
+			BandLevel	"0"
+			BandType	"0"
+			FieldName	"cal_SerieSecuencial"
+			TableName	""
+		}
+		ReportField	"calTipoDoc"		
+		{
+			AccumulatorType	"0"
+			ArrayIndex	"0"
+			BandLevel	"0"
+			BandType	"0"
+			FieldName	"cal_TipoDoc"
+			TableName	""
+		}
+	}
+	Name	"ComprobantedeComprasHIST"
+}
+</Component>

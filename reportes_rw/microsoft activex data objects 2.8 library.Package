@@ -1,0 +1,9 @@
+<Component Name="Microsoft ActiveX Data Objects 2.8 Library" ProductId="9890" Object="VBAReference" >
+VBAReference	"Microsoft ActiveX Data Objects 2.8 Library"
+{
+	FilePath	"C:\\Program Files (x86)\\Common Files\\System\\ado\\msado28.tlb"
+	Guid	"{2A75196C-D9EB-4129-B803-931327F72D5C}"
+	MajorVersion	"2"
+	MinorVersion	"8"
+}
+</Component>

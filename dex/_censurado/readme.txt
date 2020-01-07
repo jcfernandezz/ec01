@@ -1,0 +1,1 @@
+7/1/20 jcf La ventana ietu ya no es necesaria. En su lugar se agrandó el número de autorización del diccionario COA.
