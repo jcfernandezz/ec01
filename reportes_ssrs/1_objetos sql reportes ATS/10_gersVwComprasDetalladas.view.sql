@@ -11,6 +11,7 @@ alter view dbo.gersVwComprasDetalladas as
 --02/09/15 jcf Ajuste de campos nulos para que muestren cero o NA
 --25/04/17 jcf Agrega vendorid
 --24/12/19 jcf Agrega vendname. Agrega campos en caso de pago al exterior. Agrega caso de prueba: comprobante con impuesto no objeto de iva e iva 0. Si son iguales al total de compra, muestra la base imponible del segundo de forma predeterminada.
+--10/01/20 jcf Filtra anulados
 --
 select 
 pm.VCHRNMBR,
@@ -77,7 +78,7 @@ ref.nsacoa_secuencial ref_nsacoa_secuencial,
 ref.numAutorizacion ref_numAutorizacion,
 pm.pordnmbr, pm.vendorid, pm.vendname, pm.prchamnt
 
-FROM vwPmTransaccionesTodas pm
+FROM dbo.vwPmTransaccionesTodas pm
 	outer apply dbo.gersFnDatosFacturaLocAndina(pm.VENDORID, pm.VCHRNMBR ) df
 	outer apply dbo.gersFnGetImpuestosPM(pm.TRXSORCE, pm.VCHRNMBR, pm.DOCTYPE, 'EXEMPT') noi
 	outer apply dbo.gersFnGetImpuestosPM(pm.TRXSORCE, pm.VCHRNMBR, pm.DOCTYPE, 'P-EXENTO') exe
@@ -92,8 +93,8 @@ FROM vwPmTransaccionesTodas pm
 	outer apply dbo.gersFnGetReferenciaNCND (pm.VCHRNMBR, pm.DOCTYPE, df.nsa_tipo_comprob) ref
 	outer apply dbo.fGersParametrosProveedor(pm.VENDORID, 'TIPO_REGIMEN', 'DOBLE_TRIBUTO', 'NORMATIVA_LEGAL', 'DENOMINACION03', 'NA', 'NA', 'PREDETERMINADO') parm
 WHERE pm.doctype  <= 5 
---  and pm.pordnmbr = ''
-  
+and pm.VOIDED = 0
+
 go
   
   IF (@@Error = 0) PRINT 'Creación exitosa de la vista: gersVwComprasDetalladas'
