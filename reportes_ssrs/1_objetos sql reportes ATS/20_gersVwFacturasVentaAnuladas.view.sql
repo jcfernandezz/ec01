@@ -2,9 +2,11 @@ IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'gersVwFacturasVen
     DROP view dbo.gersVwFacturasVentaAnuladas;
 GO
 
+--16/01/20 jcf Quita espacios a la derecha en los campos string
+--
 create VIEW dbo.gersVwFacturasVentaAnuladas AS  
 select 
-	doc.nsa_tipo_comprob tipoComprobante,	--'Código tipo de Comprobante anulado',
+	rtrim(doc.nsa_tipo_comprob) tipoComprobante,	--'Código tipo de Comprobante anulado',
 	substring(dbo.gersFnGetSegmentoX(1, so.sopnumbe), 3, 3) Establecimiento,
 	dbo.gersFnGetSegmentoX(2, so.sopnumbe) puntoEmision,
 	dbo.gersFnGetSegmentoX(3, so.sopnumbe) secuencial,
