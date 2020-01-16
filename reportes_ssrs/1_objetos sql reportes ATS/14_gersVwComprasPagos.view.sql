@@ -7,8 +7,9 @@ alter view dbo.gersVwComprasPagos as
 --31/03/15 jcf Creación
 --02/09/15 jcf REplanteo de consulta para mostrar pagos mayores a 1000
 --06/01/20 jcf Muestra los pagos incluso si no tienen código de medio de pago asociado
+--16/01/20 jcf Quita espacios a la derecha en los campos string
 --
-select pm.APTVCHNM VCHRNMBR, pm.PSTGDATE, 
+select rtrim(pm.APTVCHNM) VCHRNMBR, pm.PSTGDATE, 
        left(dm.pmtdocid, 2) formaPago
   from dbo.tii_vwPmAplicadosExtendido pm
   left join dbo.vwPmPaymentDocumentMgmt dm

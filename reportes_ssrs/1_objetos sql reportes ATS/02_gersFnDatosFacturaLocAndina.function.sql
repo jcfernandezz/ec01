@@ -8,10 +8,11 @@ AS
 --Propósito. Obtiene datos de la factura de compra de localización andina (Ecuador)
 --30/3/15 jcf Creación
 --24/12/19 jcf Corrige tipoIdProv
+--16/01/20 jcf Quita espacios a la derecha en los campos string
 --
    RETURN
    (
-   select df.nsa_cod_transac, df.nsa_tipo_comprob, df.nsa_serie, df.nsacoa_secuencial, df.nsa_autorizacion,
+   select rtrim(df.nsa_cod_transac) nsa_cod_transac, rtrim(df.nsa_tipo_comprob) nsa_tipo_comprob, df.nsa_serie, rtrim(df.nsacoa_secuencial) nsacoa_secuencial, df.nsa_autorizacion,
 		left(ltrim(df.nsa_serie), 3) establecimiento,		--'Establecimiento',
 		right(rtrim(df.nsa_serie), 3) puntoEmision,
 		case when dp.doctype = 3 then '01'	--ruc
@@ -19,24 +20,16 @@ AS
 			when dp.doctype = 2 then '03'	--pasaporte
 		else	''
 		end tipoIdProv, 
-		-- case when dp.doctype = 3 then 
-		-- 	case when right(left(dp.nsa_RUC_Prov, 3), 1) in ('1', '2', '3', '4', '5') then 
-		-- 		'02'		--cédula
-		-- 	else '01'		--ruc
-		-- 	end
-		-- else
-		-- 	'03'			--pasaporte o tarjeta de id
-		-- end tipoIdProv, 
-		dp.nsa_RUC_Prov,
+		rtrim(dp.nsa_RUC_Prov) nsa_RUC_Prov,
 		
 		case when isnull(au.mexFolioFiscal, '') = '' then
-			df.nsa_autorizacion
-		else au.mexFolioFiscal
+			rtrim(df.nsa_autorizacion)
+		else rtrim(au.mexFolioFiscal)
 		end numAutorizacion,	-- 'Número de Autorizacion',
 
-		dbo.gersFnGetSegmentoX(1, cr.eBizS_NextDocumentNumber) cRetEstablecimiento,
-		dbo.gersFnGetSegmentoX(2, cr.eBizS_NextDocumentNumber) cRetPuntoEmision,
-		dbo.gersFnGetSegmentoX(3, cr.eBizS_NextDocumentNumber) cRetSecuencial,
+		rtrim(dbo.gersFnGetSegmentoX(1, cr.eBizS_NextDocumentNumber)) cRetEstablecimiento,
+		rtrim(dbo.gersFnGetSegmentoX(2, cr.eBizS_NextDocumentNumber)) cRetPuntoEmision,
+		rtrim(dbo.gersFnGetSegmentoX(3, cr.eBizS_NextDocumentNumber)) cRetSecuencial,
 		rtrim(cr.cmpyadd1) cRetNumAutorizacion
 		
    from NSACOA_GL00021 df			--comprobantes

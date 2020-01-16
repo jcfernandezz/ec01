@@ -12,15 +12,16 @@ alter view dbo.gersVwComprasDetalladas as
 --25/04/17 jcf Agrega vendorid
 --24/12/19 jcf Agrega vendname. Agrega campos en caso de pago al exterior. Agrega caso de prueba: comprobante con impuesto no objeto de iva e iva 0. Si son iguales al total de compra, muestra la base imponible del segundo de forma predeterminada.
 --10/01/20 jcf Filtra anulados
+--16/01/20 jcf Quita espacios a la derecha en los campos string
 --
 select 
-pm.VCHRNMBR,
+rtrim(pm.VCHRNMBR) VCHRNMBR,
 df.nsa_cod_transac,
 df.tipoIdProv,
 df.nsa_RUC_Prov,
 df.nsa_tipo_comprob,				--tipo de comprobante
-pm.userdef1,						-- 'Tipo de Proveedor',
-pm.userdef2,						-- 'Parte Relacionada',
+rtrim(pm.userdef1) userdef1,		-- 'Tipo de Proveedor',
+rtrim(pm.userdef2) userdef2,		-- 'Parte Relacionada',
 pm.PSTGDATE,						-- 'Fecha Registro',
 df.establecimiento,
 df.puntoEmision,
@@ -76,7 +77,7 @@ ref.establecimiento ref_establecimiento,
 ref.puntoEmision ref_puntoEmision,
 ref.nsacoa_secuencial ref_nsacoa_secuencial,
 ref.numAutorizacion ref_numAutorizacion,
-pm.pordnmbr, pm.vendorid, pm.vendname, pm.prchamnt
+rtrim(pm.pordnmbr) pordnmbr, rtrim(pm.vendorid) vendorid, rtrim(pm.vendname) vendname, rtrim(pm.prchamnt) prchamnt
 
 FROM dbo.vwPmTransaccionesTodas pm
 	outer apply dbo.gersFnDatosFacturaLocAndina(pm.VENDORID, pm.VCHRNMBR ) df

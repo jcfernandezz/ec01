@@ -6,10 +6,11 @@ alter VIEW dbo.gersVwVentasCliente AS
 -- Propósito. Obtiene datos para reporte Ventas Cliente del ATS Ecuador
 --01/04/15 jcf Creación
 --06/01/20 jcf Agrega sopnumbe, montoIce, tipoEmision. Elimina group by
+--16/01/20 jcf Quita espacios a la derecha en los campos string
 --
   select 
     year(so.docdate) anio, month(so.docdate) mes,
-    so.sopnumbe, fla.tipoIdCli, fla.nsa_ruc_cliente, fla.nsa_tipo_comprob, fla.tipoCliente, fla.parteRelacionada, fla.custname,
+    rtrim(so.sopnumbe) sopnumbe, fla.tipoIdCli, fla.nsa_ruc_cliente, fla.nsa_tipo_comprob, fla.tipoCliente, fla.parteRelacionada, fla.custname,
     exe.tdttxSLS baseNoObjetoIva,
     icr.tdttxSLS baseCeroIva,	--'Base Imponible tarifa 0% IVA',
     iva.tdttxSLS baseIva,		  -- 'Base Imponible tarifa IVA diferente de 0%',

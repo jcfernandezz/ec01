@@ -2,14 +2,15 @@ IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'gersVwComprasRete
     DROP view dbo.gersVwComprasRetenciones;
 GO
 
-create view dbo.gersVwComprasRetenciones as
+create  view dbo.gersVwComprasRetenciones as
 -- Propósito. Obtiene datos para reporte Compras retenciones del ATS Ecuador
 --31/03/15 jcf Creación
 --11/02/16 jcf Reemplaza tabla de impuestos por vista
 --24/04/17 jcf Filtrar anulados
+--16/01/20 jcf Quita espacios a la derecha en los campos string
 --
-select pm.VCHRNMBR, pm.pordnmbr, year(pm.PSTGDATE) anio, MONTH(pm.PSTGDATE) mes,
-		dbo.gersFnGetSegmentoX(2, TX00201.taxdtlid) codRetencion,
+select rtrim(pm.VCHRNMBR) VCHRNMBR, pm.pordnmbr, year(pm.PSTGDATE) anio, MONTH(pm.PSTGDATE) mes,
+		rtrim(dbo.gersFnGetSegmentoX(2, TX00201.taxdtlid)) codRetencion,
        SUM(pim.tdttxpur) baseImponible,
        case when SUM(pim.tdttxpur) <> 0 then
 	       (100 * SUM(pim.taxamnt) / SUM(pim.tdttxpur)) 
